@@ -14,4 +14,7 @@ pytest>=6.2.0
 
 # Optional but recommended
 jupyter>=1.0.0
+
 jupyterlab>=3.0.0
+
+scikit-learn>=1.0.0
