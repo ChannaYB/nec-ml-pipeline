@@ -90,8 +90,21 @@ SAVE_VALIDATION_REPORTS = True      # Save validation reports to file
 TEST_SIZE = 1 - TRAIN_TEST_SPLIT_RATIO  # 0.2 (20% test)
 RANDOM_STATE = RANDOM_SEED 
 
+NUMERICAL_IMPUTATION_STRATEGY = 'median'  # 'mean', 'median', 'most_frequent'
+CATEGORICAL_IMPUTATION_STRATEGY = 'most_frequent'  # 'most_frequent', 'constant'
+
+# Scaling method
+NUMERICAL_SCALER = 'standard'  # 'standard', 'minmax', 'robust'
+
+# Encoding method
+CATEGORICAL_ENCODING = 'onehot'  # 'onehot', 'ordinal'
+
+# Feature engineering
+CREATE_INTERACTION_FEATURES = False
+
 # CREATE DIRECTORIES
 
 os.makedirs(RAW_DATA_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
+
 os.makedirs(VALIDATION_REPORTS_DIR, exist_ok=True)
