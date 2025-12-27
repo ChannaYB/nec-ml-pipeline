@@ -9,7 +9,8 @@
 - [Quick Start](#quick-start)
 - [Installation Guide](#installation-guide)
 - [Project Structure](#project-structure)
-- [Member 1: Data Pipeline](#member-1-data-pipeline)
+- [Step 1: Data Pipeline](#step-1-data-pipeline)
+- [Step 2: Data Preprocessing](#step-2-data-preprocessing)
 - [Usage Guide](#usage-guide)
 - [Testing](#testing)
 - [Documentation](#documentation)
@@ -222,7 +223,7 @@ nec-ml-pipeline/
 
 ---
 
-## 🔧 Member 1: Data Pipeline & Validation
+##  Step 1: Data Pipeline & Validation
 
 
 ### Overview
@@ -299,6 +300,42 @@ Member 1 is responsible for the **foundation** of the entire ML pipeline:
 - **Result:** 37 columns (2 IDs + 1 target + 34 features)
 
 ---
+
+## Data preprocessing (Step 2)
+
+### Responsibilities:
+- Feature preprocessing pipeline using scikit-learn ColumnTransformer
+- Numerical feature imputation and scaling
+- Categorical feature encoding
+- Integration with Member 1's data pipeline
+
+### Key Decisions:
+
+**1. Median Imputation for Numerical Features**
+- Why: Robust to outliers (power costs can have extreme values)
+- Alternative: Mean imputation (rejected - sensitive to outliers)
+- Result: Preserved data distribution
+
+**2. Standard Scaling**
+- Why: ML algorithms perform better with normalized features
+- Alternative: MinMax scaling (rejected - sensitive to outliers)
+- Result: All numerical features have mean=0, std=1
+
+**3. OneHot Encoding with drop='first'**
+- Why: Avoid multicollinearity (dummy variable trap)
+- Alternative: Label encoding (rejected - implies order in categories)
+- Result: 4 categorical features → 11 binary features
+
+### Technical Learning:
+- scikit-learn Pipeline and ColumnTransformer patterns
+- Importance of fit on train, transform on test (avoid data leakage)
+- Feature engineering through encoding increases feature count
+
+### Results:
+- Input: 34 features
+- Output: 41 features (30 numerical + 11 encoded)
+- Zero missing values
+- Processing time: <0.2 seconds
 
 ##  Usage Guide
 
