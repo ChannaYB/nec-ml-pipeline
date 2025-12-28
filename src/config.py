@@ -134,3 +134,26 @@ LINEAR_FIT_INTERCEPT = True
 # Number of plants per demand (for selection error calculation)
 PLANTS_PER_DEMAND = 64
 
+# EVALUATION SETTINGS (step 4)
+# Cross-validation
+LOGO_CV_SPLITS = 5  # Number of folds for LOGO CV
+LOGO_CV_RANDOM_STATE = RANDOM_SEED
+
+# Evaluation outputs
+RESULTS_DIR = 'results'
+EVALUATION_REPORTS_DIR = os.path.join(RESULTS_DIR, 'evaluation_reports')
+SELECTION_TABLES_DIR = os.path.join(RESULTS_DIR, 'selection_tables')
+PLOTS_DIR = os.path.join(RESULTS_DIR, 'plots')
+
+# Create directories if they don't exist
+os.makedirs(EVALUATION_REPORTS_DIR, exist_ok=True)
+os.makedirs(SELECTION_TABLES_DIR, exist_ok=True)
+os.makedirs(PLOTS_DIR, exist_ok=True)
+
+# Visualization settings
+PLOT_STYLE = 'seaborn-v0_8-darkgrid'
+PLOT_FIGURE_SIZE = (12, 6)
+PLOT_DPI = 100
+
+
+
