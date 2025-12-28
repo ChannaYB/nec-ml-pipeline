@@ -1,184 +1,92 @@
-# NEC ML Pipeline - Power Plant Selection System
+# NEC ML Pipeline - Smart Power Plant Selection
+
+End-to-end machine learning pipeline for optimizing power plant selection based on generation cost predictions.
+
+**Institution:** Keele University Business School  
+**Module:** MAN-40389 - Advanced Data Analytics and Machine Learning  
+**Assessment:** Group Assignment (60%)
 
 ---
 
-## Table of Contents
+##  Executive Summary
 
-- [Project Overview](#project-overview)
-- [Team Members](#team-members)
-- [Quick Start](#quick-start)
-- [Installation Guide](#installation-guide)
-- [Project Structure](#project-structure)
-- [Step 1: Data Pipeline](#step-1-data-pipeline)
-- [Step 2: Data Preprocessing](#step-2-data-preprocessing)
-- [Usage Guide](#usage-guide)
-- [Testing](#testing)
-- [Documentation](#documentation)
+An automated system that predicts generation costs and selects optimal power plants for varying demand scenarios:
 
----
-
-##  Project Overview
-
-This project develops an **end-to-end machine learning pipeline** for the National Energy Consortium (NEC) to predict power generation costs and select optimal power plants for different demand scenarios.
-
-### Business Problem
-
-NEC needs to select the most cost-effective power plant for each energy demand scenario from 64 available plants. The system must:
-- Predict generation costs for each (Demand, Plant) combination
-- Select the plant with minimum predicted cost
-- Provide robust evaluation metrics (Selection Error Rate & RMSE)
-
-### Dataset
-
-- **Demand Scenarios:** 500 unique scenarios with 12 numerical features + 2 categorical
-- **Power Plants:** 64 plants with 18 numerical features + 2 categorical  
-- **Generation Costs:** 32,000 cost records (500 demands × 64 plants)
-- **Target Variable:** Cost_USD_per_MWh
-
-**After cleaning:** 415 complete demands (26,560 rows total)
-
----
-
-##  Team Members
-
-| **Member 1** | Data Pipeline & Validation
-| **Member 2** | Preprocessing & Feature Engineering 
-| **Member 3** | Model Training & Custom Scorer
-| **Member 4** | Evaluation & Cross-Validation
-| **Member 5** | Hyperparameter Tuning & Integration
+- **Dataset:** 26,560 samples (415 demand scenarios × 64 power plants)
+- **Final Model:** Tuned Random Forest (200 estimators, unlimited depth)
+- **Performance:** 57.83% selection error (42.17% accuracy)
+- **Improvement:** 4.0% reduction in selection error vs baseline
 
 ---
 
 ##  Quick Start
 
 ### Prerequisites
+```
+Python 3.8+
+8GB RAM minimum (16GB recommended)
+```
 
-- Python 3.8 or higher
-- pip (Python package manager)
-- Git
+### Installation
 
-### Installation (5 minutes)
+**1. Setup Environment**
 ```bash
-# 1. Clone the repository
-git clone <your-repo-url>
+# Clone repository
+git clone <repository-url>
 cd nec-ml-pipeline
 
-# 2. Create virtual environment
+# Create virtual environment
 python -m venv venv
 
-# 3. Activate virtual environment
-# On Windows:
+# Activate environment
+# Windows:
 venv\Scripts\activate
-
-# On Mac/Linux:
+# Mac/Linux:
 source venv/bin/activate
 
-# 4. Install requirements
-pip install -r requirements.txt
-
-# 5. Run Member 1 pipeline
-python -m src.data_ingestion
-```
-
-**Expected Output:**
-```
-DATA INGESTION COMPLETE
-Train: (21248, 37)
-Test: (5312, 37)
-```
-
----
-
-##  Installation Guide
-
-### Step 1: Create Virtual Environment
-
-**What is a Virtual Environment?**  
-A virtual environment is an isolated Python environment that keeps project dependencies separate from your system Python.
-
-**Why use it?**
--  Prevents package conflicts
--  Easy to reproduce on other machines
--  Professional best practice
-
-**Create venv:**
-```bash
-# Navigate to project folder
-cd nec-ml-pipeline
-
-# Create virtual environment named 'venv'
-python -m venv venv
-```
-
-This creates a `venv/` folder containing:
-- Python interpreter
-- pip package manager
-- Installed packages (isolated from system)
-
----
-
-### Step 2: Activate Virtual Environment
-
-**On Windows (Command Prompt):**
-```cmd
-venv\Scripts\activate
-```
-
-**On Windows (PowerShell):**
-```powershell
-venv\Scripts\Activate.ps1
-```
-
-If you get an error about execution policy:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-venv\Scripts\Activate.ps1
-```
-
-**On Windows (Git Bash):**
-```bash
-source venv/Scripts/activate
-```
-
-**On Mac/Linux:**
-```bash
-source venv/bin/activate
-```
-
-**Verify activation:**
-- Your terminal should show `(venv)` at the start
-- Run: `which python` (Mac/Linux) or `where python` (Windows)
-- Should show path inside `venv/` folder
-
----
-
-### Step 3: Install Dependencies
-```bash
-# Upgrade pip first
-pip install --upgrade pip
-
-# Install all required packages
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-**Packages installed:**
-- `pandas` - Data manipulation
-- `numpy` - Numerical operations
-- `scikit-learn` - Machine learning
-- `matplotlib` - Plotting
-- `seaborn` - Statistical visualization
-- `pytest` - Testing
+### Running the Pipeline
 
-**Verify installation:**
+**Single Command Execution:**
 ```bash
-pip list
+# Full pipeline with complete hyperparameter tuning (~15-20 min)
+python main.py
+
+# Quick mode with reduced parameter grid (~5-8 min)
+python main.py --quick
+
+# Baseline evaluation only, no tuning (~2-3 min)
+python main.py --no-tune
+
+# Minimal console output
+python main.py --quick --quiet
 ```
 
----
+### Expected Output
+```
+======================================================================
+NEC ML PIPELINE - COMPLETE EXECUTION
+======================================================================
 
-### Step 4: Deactivate (When Done)
-```bash
-deactivate
+[Step 1/8] Data Loading 
+[Step 2/8] Preprocessing 
+[Step 3/8] Baseline Model 
+[Step 4/8] Baseline Evaluation 
+[Step 5/8] Hyperparameter Tuning 
+[Step 6/8] Tuned Model Evaluation 
+[Step 7/8] Model Comparison 
+[Step 8/8] Visualization 
+
+FINAL RESULTS:
+  Baseline: 60.24% selection error
+  Tuned:    57.83% selection error
+  Improvement: 4.0%
+
+ Results saved to results/ directory
+======================================================================
 ```
 
 ---
@@ -186,390 +94,170 @@ deactivate
 ##  Project Structure
 ```
 nec-ml-pipeline/
-├── src/                          # Source code
-│   ├── __init__.py              # Package initialization
-│   ├── config.py                # Configuration settings
-│   ├── data_ingestion.py        # Data loading & merging (Member 1)
-│   ├── data_validation.py       # Data quality checks (Member 1)
-│   ├── data_splitting.py        # LOGO CV utilities (Member 1)
-│   └── eda_utils.py             # Exploratory analysis (Member 1)
-│
-├── tests/                        # Unit tests
-│   └── test_data_ingestion.py  # Data pipeline tests
-│
 ├── data/
-│   ├── raw/                     # Original CSV files
-│   │   ├── demand.csv          # 500 demand scenarios
-│   │   ├── plants.csv          # 64 power plants
-│   │   └── generation_costs.csv # 32,000 cost records
-│   │
-│   ├── processed/               # Cleaned & split data
-│   │   ├── train.csv           # Training set (21,248 rows)
-│   │   └── test.csv            # Testing set (5,312 rows)
-│   │
-│   └── validation_reports/      # Data quality reports
-│
-├── docs/                        # Documentation
-│   └── member1_guide.md        # Member 1 detailed guide
-│
-├── notebooks/                   # Jupyter notebooks (optional)
-│
-├── venv/                        # Virtual environment (not in Git)
-│
-├── .gitignore                   # Git ignore rules
-├── requirements.txt             # Python dependencies
-└── README.md                    # This file
-```
-
----
-
-##  Step 1: Data Pipeline & Validation
-
-
-### Overview
-
-Member 1 is responsible for the **foundation** of the entire ML pipeline:
-- Loading and merging 3 separate data files
-- Data quality validation
-- Handling missing values
-- Creating grouped train/test splits
-- Ensuring LOGO CV compatibility
-
-### Key Accomplishments
-
- **Data Ingestion**
-- Loads 3 CSV files: demand.csv, plants.csv, generation_costs.csv
-- Merges into unified dataset (37 columns total)
-- Combines demand features + plant features + target costs
-
- **Data Cleaning**
-- Identified and removed 96 rows with missing target values
-- Removed 85 demands (17%) with incomplete plant sets
-- Ensures data quality for downstream modeling
-
- **Grouped Train/Test Split**
-- Train: 332 demands (21,248 rows)
-- Test: 83 demands (5,312 rows)
-- Split ratio: 80/20
-- **Critical:** All 64 plants kept together per demand (required for LOGO CV)
-- Zero demand leakage between train and test
-
- **Data Validation**
-- Zero missing values in target variable
-- All demands have exactly 64 plants
-- Schema validation passed
-- Quality reports generated
-
-### Data Quality Metrics
-
-| Metric | Train | Test |
-|--------|-------|------|
-| Rows | 21,248 | 5,312 |
-| Demands | 332 | 83 |
-| Plants per Demand | 64 | 64 |
-| Missing Costs | 0 | 0 |
-| Columns | 37 | 37 |
-
-### Files Created
-
-- `src/config.py` - Central configuration
-- `src/data_ingestion.py` - Data loading & merging
-- `src/data_validation.py` - Quality checks
-- `src/data_splitting.py` - LOGO CV utilities
-- `src/eda_utils.py` - Exploratory analysis
-- `tests/test_data_ingestion.py` - Unit tests
-- `data/processed/train.csv` - Training data
-- `data/processed/test.csv` - Testing data
-
-### Critical Design Decisions
-
-**1. Grouped Splitting by Demand ID**
-- **Why:** Required for Leave-One-Group-Out (LOGO) cross-validation
-- **Impact:** Prevents data leakage, ensures valid evaluation
-- **Trade-off:** Cannot use simple random split
-
-**2. Removing Incomplete Demands**
-- **Issue:** 85 demands had missing cost values (incomplete plant sets)
-- **Decision:** Remove entirely rather than impute
-- **Rationale:** Maintains LOGO CV integrity (each demand needs all 64 plants)
-- **Impact:** Lost 17% of demands, but ensured data quality
-
-**3. Merged Data Architecture**
-- **Approach:** Costs → Demand → Plants (left joins)
-- **Benefit:** Preserves all cost records, adds features systematically
-- **Result:** 37 columns (2 IDs + 1 target + 34 features)
-
----
-
-## Data preprocessing (Step 2)
-
-### Responsibilities:
-- Feature preprocessing pipeline using scikit-learn ColumnTransformer
-- Numerical feature imputation and scaling
-- Categorical feature encoding
-- Integration with Member 1's data pipeline
-
-### Key Decisions:
-
-**1. Median Imputation for Numerical Features**
-- Why: Robust to outliers (power costs can have extreme values)
-- Alternative: Mean imputation (rejected - sensitive to outliers)
-- Result: Preserved data distribution
-
-**2. Standard Scaling**
-- Why: ML algorithms perform better with normalized features
-- Alternative: MinMax scaling (rejected - sensitive to outliers)
-- Result: All numerical features have mean=0, std=1
-
-**3. OneHot Encoding with drop='first'**
-- Why: Avoid multicollinearity (dummy variable trap)
-- Alternative: Label encoding (rejected - implies order in categories)
-- Result: 4 categorical features → 11 binary features
-
-### Technical Learning:
-- scikit-learn Pipeline and ColumnTransformer patterns
-- Importance of fit on train, transform on test (avoid data leakage)
-- Feature engineering through encoding increases feature count
-
-### Results:
-- Input: 34 features
-- Output: 41 features (30 numerical + 11 encoded)
-- Zero missing values
-- Processing time: <0.2 seconds
-
-##  Usage Guide
-
-### For Team Members
-
-**Member 2 (Preprocessing):**
-```python
-from src.data_ingestion import create_train_test
-from src.config import CATEGORICAL_FEATURES, NUMERICAL_FEATURES
-
-# Load clean data
-train_df, test_df = create_train_test(verbose=False)
-
-# Separate features
-X_train = train_df[CATEGORICAL_FEATURES + NUMERICAL_FEATURES]
-y_train = train_df['Cost_USD_per_MWh']
-
-# Your preprocessing code here...
-```
-
-**Member 3 (Models):**
-```python
-from src.config import TARGET_COLUMN, GROUP_COLUMN
-
-# After Member 2's preprocessing
-# Your model training code here...
-```
-
-**Member 4 (Evaluation):**
-```python
-from src.data_splitting import get_logo_splits
-
-# Create LOGO CV folds
-splits = get_logo_splits(train_df, n_splits=5)
-
-for fold, (train_idx, val_idx) in enumerate(splits):
-    train_fold = train_df.iloc[train_idx]
-    val_fold = train_df.iloc[val_idx]
-    # Your evaluation code here...
-```
-
-### Running the Pipeline
-
-**Option 1: Run data ingestion directly**
-```bash
-python -m src.data_ingestion
-```
-
-**Option 2: Use in Python script**
-```python
-from src.data_ingestion import create_train_test
-
-# Load data
-train_df, test_df = create_train_test(verbose=True)
-
-print(f"Train: {train_df.shape}")
-print(f"Test: {test_df.shape}")
-```
-
-**Option 3: Load saved files**
-```python
-import pandas as pd
-
-train_df = pd.read_csv('data/processed/train.csv')
-test_df = pd.read_csv('data/processed/test.csv')
+│   ├── raw/                    # Original CSV files
+│   └── processed/              # train.csv, test.csv
+├── src/                        # Pipeline modules
+├── tests/                      # Unit tests
+├── results/                    # Generated outputs
+│   ├── evaluation_reports/     # Performance summaries
+│   ├── selection_tables/       # Prediction results (CSV)
+│   └── plots/                  # Visualizations (PNG)
+├── models/                     # Saved models (.pkl)
+├── main.py                     # Entry point
+├── requirements.txt            # Dependencies
+└── README.md                   # This file
 ```
 
 ---
 
 ##  Testing
 
-### Run All Tests
+**Run all unit tests:**
 ```bash
-# Activate virtual environment first
-venv\Scripts\activate
+# Test individual modules
+python -m tests.test_data_ingestion
+python -m tests.test_preprocessing
+python -m tests.test_models
+python -m tests.test_evaluation
+python -m tests.test_tuning
 
-# Run unit tests
-python tests/test_data_ingestion.py
-```
-
-### Run Individual Modules
-```bash
-# Test data ingestion
-python -m src.data_ingestion
-
-# Test data validation
-python -m src.data_validation
-
-# Test data splitting
-python -m src.data_splitting
-
-# Test EDA utilities
-python -m src.eda_utils
-```
-
-### Expected Test Results
-
-All tests should pass with:
--  Data loaded successfully
--  No missing target values
--  All demands have 64 plants
--  No train/test leakage
--  Correct data shapes
-
----
-
-##  Documentation
-
-### Main Documents
-
-- **README.md** - Project overview and setup
-- **requirements.txt** - Python dependencies
-- **data/validation_reports/** - Data quality reports
-
-### Code Documentation
-
-All Python modules include:
-- Module-level docstrings
-- Function-level docstrings
-- Inline comments
-- Type hints where appropriate
-
----
-
-##  Key Configuration
-
-**Important variables in `src/config.py`:**
-```python
-# Data files
-DEMAND_PATH = 'data/raw/demand.csv'
-PLANTS_PATH = 'data/raw/plants.csv'
-GENERATION_COSTS_PATH = 'data/raw/generation_costs.csv'
-
-# Target and grouping
-TARGET_COLUMN = 'Cost_USD_per_MWh'
-GROUP_COLUMN = 'Demand ID'
-
-# Split settings
-TRAIN_TEST_SPLIT_RATIO = 0.8  # 80% train, 20% test
-RANDOM_SEED = 42              # For reproducibility
-
-# Features
-CATEGORICAL_FEATURES = ['DF_region', 'DF_daytype', 'Plant Type', 'Region']
-NUMERICAL_FEATURES = ['DF1', ..., 'DF12', 'PF1', ..., 'PF18']  # 30 features
+# Or run all tests (pytest required)
+pytest tests/
 ```
 
 ---
 
-##  Important Notes
+##  Key Results
 
-### Data Quality
+| Metric | Baseline RF | Tuned RF | Improvement |
+|--------|-------------|----------|-------------|
+| Test RMSE | $13.01 | $12.90 | 0.9% |
+| Test R² | 0.332 | 0.344 | 3.5% |
+| Selection Error | 60.24% | 57.83% | 4.0% |
+| Correct Selections | 33/83 | 35/83 | +2 |
 
-**Missing Values:**
-- Original dataset had 96 missing cost values (0.3%)
-- Affected 85 demands (17% of total)
-- All removed to maintain data quality
-- Final dataset has **zero missing values** in target
+**Tuned Model Configuration:**
+- n_estimators: 200
+- max_depth: None
+- max_features: sqrt
+- min_samples_split: 5
+- min_samples_leaf: 2
 
-**Demand Structure:**
-- Each demand **must** have exactly 64 plants
-- Required for LOGO cross-validation
-- Incomplete demands were removed entirely
+---
 
-### Virtual Environment
+##  Environment Details
 
-**Always activate venv before running code:**
-```bash
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Mac/Linux
+**Python Dependencies:**
+```
+pandas>=1.3.0
+numpy>=1.21.0
+scikit-learn>=1.0.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
 ```
 
-**Never commit venv to Git:**
-- Already in `.gitignore`
-- Each team member creates their own venv
+**System Requirements:**
+- CPU: 4+ cores recommended for parallel processing
+- RAM: 8GB minimum, 16GB for full grid search
+- Storage: ~500MB for data and results
 
-### Git Workflow
-```bash
-# Daily workflow
-git pull origin main
-git checkout -b feature/your-feature
-# Make changes
-git add .
-git commit -m "descriptive message"
-git push origin feature/your-feature
-# Create pull request on GitHub
+**Tested On:**
+- Windows 10/11
+- macOS 12+
+- Ubuntu 20.04+
+
+---
+
+##  Output Files
+
+**After execution, find results in:**
+```
+results/
+├── evaluation_reports/
+│   ├── evaluation_Baseline_RF_YYYYMMDD_HHMMSS.txt
+│   └── evaluation_Tuned_RF_YYYYMMDD_HHMMSS.txt
+├── selection_tables/
+│   ├── selection_Baseline_RF_Test_YYYYMMDD_HHMMSS.csv
+│   └── selection_Tuned_RF_Test_YYYYMMDD_HHMMSS.csv
+└── plots/
+    ├── dashboard_Baseline_RF_YYYYMMDD_HHMMSS.png
+    ├── dashboard_Tuned_RF_YYYYMMDD_HHMMSS.png
+    ├── model_comparison_YYYYMMDD_HHMMSS.png
+    ├── logo_cv_Baseline_RF_YYYYMMDD_HHMMSS.png
+    └── selection_analysis_*.png
+
+models/
+├── tuned_rf_YYYYMMDD_HHMMSS.pkl
+└── baseline_rf_YYYYMMDD_HHMMSS.pkl (if saved)
 ```
 
 ---
 
 ##  Troubleshooting
 
-### "ModuleNotFoundError: No module named 'src'"
-
-**Solution:**
+**Issue: ModuleNotFoundError**
 ```bash
-# Make sure you're in project root
-cd nec-ml-pipeline
-
-# Run as module
-python -m src.data_ingestion
-```
-
-### "FileNotFoundError: demand.csv not found"
-
-**Solution:**
-```bash
-# Check files are in correct location
-ls data/raw/
-
-# Should show: demand.csv, plants.csv, generation_costs.csv
-```
-
-### Import errors
-
-**Solution:**
-```bash
-# Make sure venv is activated
-venv\Scripts\activate
-
-# Reinstall requirements
+# Ensure virtual environment is activated and dependencies installed
 pip install -r requirements.txt
+```
+
+**Issue: Out of Memory**
+```bash
+# Use quick mode with reduced grid
+python main.py --quick
+```
+
+**Issue: Slow Execution**
+```bash
+# Skip hyperparameter tuning
+python main.py --no-tune
+```
+
+**Issue: Import Errors**
+```bash
+# Run from project root directory
+cd nec-ml-pipeline
+python main.py
 ```
 
 ---
 
+##  Documentation
 
-##  Assessment Alignment
+**Code Documentation:**
+- All modules include comprehensive docstrings
+- Function signatures follow Google style
+- Type hints provided for key functions
 
-This project addresses:
+**For detailed technical information:**
+- See `Assessment_2_Brief.pdf` for project requirements
+- See `Technical_Summary.docx` for methodology details
+- See `Presentation.pptx` for visual overview
 
-- **ILO1:** ML algorithm selection and justification
-- **ILO2:** Complex data analysis and pattern identification
-- **ILO3:** Predictive model development
-- **ILO4:** Model performance evaluation
-- **ILO5:** End-to-end ML pipeline design
+---
+
+##  Team Contributions
+
+**Pipeline Components:**
+- Data Pipeline & Validation
+- Preprocessing & Feature Engineering  
+- Model Training & Custom Scorer
+- Evaluation & Visualization
+- Hyperparameter Tuning & Integration
+
+**Full integration tested and verified.**
+
+---
+
+##  Citation
+```bibtex
+@software{nec_ml_pipeline_2025,
+  title = {NEC ML Pipeline: Smart Power Plant Selection},
+  year = {2025},
+  institution = {Keele University Business School},
+  course = {MAN-40389}
+}
+```
 
 ---
