@@ -109,6 +109,31 @@ os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 
 os.makedirs(VALIDATION_REPORTS_DIR, exist_ok=True)
 
+# Model selection(step 3)
+DEFAULT_MODEL = 'random_forest'  # 'random_forest', 'gradient_boosting', 'linear'
+ALTERNATIVE_MODEL = 'gradient_boosting'
+
+# Random Forest parameters
+RF_N_ESTIMATORS = 100
+RF_MAX_DEPTH = 20
+RF_MIN_SAMPLES_SPLIT = 5
+RF_MIN_SAMPLES_LEAF = 2
+RF_RANDOM_STATE = RANDOM_SEED
+
+# Gradient Boosting parameters
+GB_N_ESTIMATORS = 100
+GB_MAX_DEPTH = 5
+GB_LEARNING_RATE = 0.1
+GB_MIN_SAMPLES_SPLIT = 5
+GB_MIN_SAMPLES_LEAF = 2
+GB_RANDOM_STATE = RANDOM_SEED
+
+# Linear Regression parameters (baseline)
+LINEAR_FIT_INTERCEPT = True
+
+# Number of plants per demand (for selection error calculation)
+PLANTS_PER_DEMAND = 64
+
 # EVALUATION SETTINGS (step 4)
 # Cross-validation
 LOGO_CV_SPLITS = 5  # Number of folds for LOGO CV
@@ -129,5 +154,6 @@ os.makedirs(PLOTS_DIR, exist_ok=True)
 PLOT_STYLE = 'seaborn-v0_8-darkgrid'
 PLOT_FIGURE_SIZE = (12, 6)
 PLOT_DPI = 100
+
 
 
